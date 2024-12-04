@@ -29,7 +29,9 @@ export class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
-      let description = response.data.fields.description;
+      let description = await this.descriptionToMarkdown(
+        response.data.fields.description
+      );
 
       if (
         DESCRIPTION_CHARACTER_LIMIT &&
@@ -49,5 +51,34 @@ export class JiraConnector {
     } catch (error) {
       throw new Error(JSON.stringify(error.response.data, null, 4));
     }
+  }
+
+  async descriptionToMarkdown(description) {
+    let next = description;
+
+    next = this.mdHeading(next);
+    next = this.mdQuotes(next);
+    next = this.mdNumberedLists(next);
+
+    return next;
+  }
+
+  mdQuotes(text) {
+    // replace first instance of {quote}, per line with >
+    let next = text.replace(/^\{quote\}/, '> ');
+    // replace all other instances of {quote} with empty string
+    next = text.replace(/\{quote\}/, '');
+
+    return next;
+  }
+
+  mdHeading(text) {
+    const next = text.replace(/h1\.|h2\.|h3\.|h4\.|h5\.|h6\./gm, '# ');
+    return next;
+  }
+
+  mdNumberedLists(text) {
+    const next = text.replace(/# /gm, '1. ');
+    return next;
   }
 }
