@@ -33449,15 +33449,15 @@ class JiraConnector {
 
   mdQuotes(text) {
     // replace first instance of {quote}, per line with >
-    let next = text.replace(/^\{quote\}/, '> ');
+    let next = text.replace(/^{quote}/, '> ');
     // replace all other instances of {quote} with empty string
-    next = text.replace(/\{quote\}/, '');
+    next = text.replace(/{quote}$/, '');
 
     return next;
   }
 
   mdHeading(text) {
-    const next = text.replace(/h1\.|h2\.|h3\.|h4\.|h5\.|h6\./gm, '#');
+    const next = text.replace(/^(h1|h2|h3|h4|h5|h6)\./gm, '#');
     return next;
   }
 
