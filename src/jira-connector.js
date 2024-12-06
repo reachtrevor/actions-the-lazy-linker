@@ -94,8 +94,10 @@ export class JiraConnector {
   }
 
   mdQuotes(text) {
+    let next = text;
+
     // replace first instance of {quote}, per line with >
-    let next = text.replace(/^{quote}/, '> ');
+    next = text.replace(/^{quote}/, '> ');
     // replace all other instances of {quote} with empty string
     next = text.replace(/{quote}$/, '');
 
