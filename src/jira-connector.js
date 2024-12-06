@@ -29,6 +29,8 @@ export class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
+      console.log('response exists: ', !!response);
+
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
       );

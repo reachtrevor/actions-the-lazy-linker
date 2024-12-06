@@ -33411,6 +33411,8 @@ class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
+      console.log('response exists: ', !!response);
+
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
       );
@@ -33446,7 +33448,6 @@ class JiraConnector {
   }
 
   mdQuotes(text) {
-    const matches = text.match(/\{quote\}/g);
     // replace first instance of {quote}, per line with >
     let next = text.replace(/^\{quote\}/, '> ');
     // replace all other instances of {quote} with empty string
@@ -33456,8 +33457,6 @@ class JiraConnector {
   }
 
   mdHeading(text) {
-    console.log('md quote:', matches);
-    const matches = text.match(/\{quote\}/g);
     const next = text.replace(/h1\.|h2\.|h3\.|h4\.|h5\.|h6\./gm, '#');
     return next;
   }
