@@ -33493,10 +33493,9 @@ class JiraConnector {
   }
 
   mdStatus(text) {
-    const next = text.replace(
-      /\*?{color(:#[a-f0-9]{6}|[a-f0-9]{3})?}\*?/gm,
-      '**'
-    );
+    let next = text;
+
+    next = text.replace(/\*?{color(:#[a-f0-9]{6}|[a-f0-9]{3})?}\*?/gim, '**');
 
     return next;
   }
