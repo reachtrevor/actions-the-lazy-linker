@@ -33440,9 +33440,35 @@ class JiraConnector {
   async descriptionToMarkdown(description) {
     let next = description;
 
-    next = this.mdHeading(next);
-    next = this.mdQuotes(next);
+    // order matters, there is cross over between numbered lists and headings
     next = this.mdNumberedLists(next);
+    next = this.mdHeading(next);
+
+    next = this.mdQuotes(next);
+
+    return next;
+  }
+
+  mdNumberedLists(text) {
+    const next = text.replace(/# /gm, '1. ');
+    return next;
+  }
+
+  mdHeading(text) {
+    const matches = text.match(/^(h1|h2|h3|h4|h5|h6)\./gm, '#');
+
+    if (matches === null || !matches.length) {
+      return text;
+    }
+
+    const next = matches.reduce((prev, match) => {
+      const heading = match.match(/(\d)/g)[0];
+      const number = Number(heading);
+
+      const mdheading = new Array(number).fill('#').join('');
+
+      return prev.replace(match, mdheading);
+    }, text);
 
     return next;
   }
@@ -33453,16 +33479,6 @@ class JiraConnector {
     // replace all other instances of {quote} with empty string
     next = text.replace(/{quote}$/, '');
 
-    return next;
-  }
-
-  mdHeading(text) {
-    const next = text.replace(/^(h1|h2|h3|h4|h5|h6)\./gm, '#');
-    return next;
-  }
-
-  mdNumberedLists(text) {
-    const next = text.replace(/# /gm, '1. ');
     return next;
   }
 }
