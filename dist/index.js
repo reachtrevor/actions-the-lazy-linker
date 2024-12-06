@@ -33479,9 +33479,9 @@ class JiraConnector {
     let next = text;
 
     // replace first instance of {quote}, per line with >
-    next = text.replace(/^{quote}/, '> ');
+    next = text.replace(/^{quote}/gm, '> ');
     // replace all other instances of {quote} with empty string
-    next = text.replace(/{quote}$/, '');
+    next = text.replace(/{quote}$/gm, '');
 
     return next;
   }
