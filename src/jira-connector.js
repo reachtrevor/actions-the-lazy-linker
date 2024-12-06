@@ -73,7 +73,7 @@ export class JiraConnector {
   }
 
   mdHeading(text) {
-    const next = text.replace(/h1\.|h2\.|h3\.|h4\.|h5\.|h6\./gm, '# ');
+    const next = text.replace(/h1\.|h2\.|h3\.|h4\.|h5\.|h6\./gm, '#');
     return next;
   }
 
