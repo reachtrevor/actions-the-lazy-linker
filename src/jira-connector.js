@@ -58,11 +58,13 @@ export class JiraConnector {
   async descriptionToMarkdown(description) {
     let next = description;
 
+    next = this.mdStatus(next);
+    next = this.mdStripLinks(next);
+    next = this.mdQuotes(next);
+
     // order matters, there is cross over between numbered lists and headings
     next = this.mdNumberedLists(next);
     next = this.mdHeading(next);
-
-    next = this.mdQuotes(next);
 
     return next;
   }
@@ -96,6 +98,21 @@ export class JiraConnector {
     let next = text.replace(/^{quote}/, '> ');
     // replace all other instances of {quote} with empty string
     next = text.replace(/{quote}$/, '');
+
+    return next;
+  }
+
+  mdStripLinks(text) {
+    const next = text.replace(/(\[.+\|.+\])|(\[~accountid.+\])/gm, '');
+
+    return next;
+  }
+
+  mdStatus(text) {
+    const next = text.replace(
+      /\*?{color(:#[a-f0-9]{6}|[a-f0-9]{3})?}\*?/gm,
+      '**'
+    );
 
     return next;
   }
