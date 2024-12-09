@@ -76,7 +76,7 @@ export class JiraConnector {
     // handles toplevel points
     next = text.replace(/# /gm, '1. ');
     // handles single nested points
-    next = text.replace(/#* /gm, '  -');
+    next = text.replace(/#* /gm, '    -');
 
     return next;
   }
