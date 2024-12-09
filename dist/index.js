@@ -33411,7 +33411,11 @@ class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
-      let description = response.data.fields.description;
+      console.log('response exists: ', !!response);
+
+      let description = await this.descriptionToMarkdown(
+        response.data.fields.description
+      );
 
       if (
         DESCRIPTION_CHARACTER_LIMIT &&
@@ -33431,6 +33435,95 @@ class JiraConnector {
     } catch (error) {
       throw new Error(JSON.stringify(error.response.data, null, 4));
     }
+  }
+
+  async descriptionToMarkdown(description) {
+    let next = description;
+
+    next = this.mdStatus(next);
+    next = this.mdStripLinks(next);
+    next = this.mdQuotes(next);
+    next = this.mdPanel(next);
+    next = this.mdCode(next);
+
+    // order matters, there is cross over between numbered lists and headings
+    next = this.mdNumberedLists(next);
+    next = this.mdHeading(next);
+
+    return next;
+  }
+
+  mdNumberedLists(text) {
+    let next = text;
+
+    // handles toplevel points only
+    next = next.replace(/# /gm, '1. ');
+
+    return next;
+  }
+
+  mdHeading(text) {
+    const matches = text.match(/^(h1|h2|h3|h4|h5|h6)\./gm, '#');
+
+    if (matches === null || !matches.length) {
+      return text;
+    }
+
+    const next = matches.reduce((prev, match) => {
+      const heading = match.match(/(\d)/g)[0];
+      const number = Number(heading);
+
+      const mdheading = new Array(number).fill('#').join('');
+
+      return prev.replace(match, mdheading);
+    }, text);
+
+    return next;
+  }
+
+  mdQuotes(text) {
+    let next = text;
+
+    // replace first instance of {quote}, per line with >
+    next = next.replace(/^{quote}/gm, '> ');
+    // replace all other instances of {quote} with empty string
+    next = next.replace(/{quote}$/gm, '');
+
+    return next;
+  }
+
+  mdStripLinks(text) {
+    const next = text.replace(/(\[.+\|.+\])|(\[~accountid.+\])/gm, '');
+
+    return next;
+  }
+
+  mdStatus(text) {
+    let next = text;
+
+    next = text.replace(/\*?{color(:#[a-f0-9]{6}|[a-f0-9]{3})?}\*?/gim, '**');
+
+    return next;
+  }
+
+  mdPanel(text) {
+    let next = text;
+    const startExp = new RegExp(/(?:{panel:bgColor=#[a-f0-9]{6}})/gim);
+    const endExp = new RegExp(/(\w.+)\n(?:{panel})/gim);
+
+    next = next.replace(endExp, '> [!NOTE]\n> $1');
+    next = next.replace(startExp, '');
+
+    return next;
+  }
+
+  mdCode(text) {
+    let next = text;
+
+    // single line
+    next = next.replace(/{{(.+?)}}/gim, '`$1`');
+
+    return next;
   }
 }
 
