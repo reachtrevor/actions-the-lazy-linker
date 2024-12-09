@@ -121,12 +121,11 @@ export class JiraConnector {
 
   mdPanel(text) {
     let next = text;
+    const startExp = new RegExp(/(?:{panel:bgColor=#[a-f0-9]{6}})/gim);
+    const endExp = new RegExp(/(\w.+)\n(?:{panel})/gim);
 
-    next = next.replace(
-      /(?:{panel:bgColor=#[a-f0-9]{6}})((\n\w).+)/gim,
-      '> [!NOTE]> $1'
-    );
-    next = next.replace(/{panel}/gim, '');
+    next = next.replace(endExp, '> [!NOTE]\n> $1');
+    next = next.replace(startExp, '');
 
     return next;
   }
