@@ -33506,7 +33506,7 @@ class JiraConnector {
 
     next = next.replace(
       /(?:{panel:bgColor=#[a-f0-9]{6}})((\n\w).+)/gim,
-      '> [!NOTE]\n> $1'
+      '> [!NOTE]> $1'
     );
     next = next.replace(/{panel}/gim, '');
 
