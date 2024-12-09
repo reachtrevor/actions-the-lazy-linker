@@ -62,6 +62,7 @@ export class JiraConnector {
     next = this.mdStripLinks(next);
     next = this.mdQuotes(next);
     next = this.mdPanel(next);
+    next = this.mdCode(next);
 
     // order matters, there is cross over between numbered lists and headings
     next = this.mdNumberedLists(next);
@@ -73,10 +74,8 @@ export class JiraConnector {
   mdNumberedLists(text) {
     let next = text;
 
-    // handles toplevel points
+    // handles toplevel points only
     next = next.replace(/# /gm, '1. ');
-    // handles single nested points
-    next = next.replace(/#\* /gm, '\n    - ');
 
     return next;
   }
@@ -132,6 +131,15 @@ export class JiraConnector {
 
     next = next.replace(endExp, '> [!NOTE]\n> $1');
     next = next.replace(startExp, '');
+
+    return next;
+  }
+
+  mdCode(text) {
+    let next = text;
+
+    // single line
+    next = next.replace(/{{(.+?)}}/gim, '`$1`');
 
     return next;
   }
