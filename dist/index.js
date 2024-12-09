@@ -33453,7 +33453,13 @@ class JiraConnector {
   }
 
   mdNumberedLists(text) {
-    const next = text.replace(/# /gm, '1. ');
+    let next = text;
+
+    // handles toplevel points
+    next = text.replace(/# /gm, '1. ');
+    // handles single nested points
+    next = text.replace(/#* /gm, '  -');
+
     return next;
   }
 
