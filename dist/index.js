@@ -33458,7 +33458,7 @@ class JiraConnector {
     // handles toplevel points
     next = next.replace(/# /gm, '1. ');
     // handles single nested points
-    next = next.replace(/#* /gm, '    -');
+    next = next.replace(/#\* /gm, '    -');
 
     return next;
   }
