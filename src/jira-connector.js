@@ -61,6 +61,7 @@ export class JiraConnector {
     next = this.mdStatus(next);
     next = this.mdStripLinks(next);
     next = this.mdQuotes(next);
+    next = this.mdPanel(next);
 
     // order matters, there is cross over between numbered lists and headings
     next = this.mdNumberedLists(next);
