@@ -33499,6 +33499,18 @@ class JiraConnector {
 
     return next;
   }
+
+  mdPanel(text) {
+    let next = text;
+
+    next = next.replace(
+      /(?:{panel:bgColor=#[a-f0-9]{6}})((\n\w).+)/gim,
+      '> [!NOTE]\n> $1'
+    );
+    next = next.replace(/{panel}/gim, '');
+
+    return next;
+  }
 }
 
 
