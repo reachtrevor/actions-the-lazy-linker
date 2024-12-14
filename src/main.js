@@ -12,6 +12,11 @@ const { JiraConnector } = require('./jira-connector');
 async function run() {
   const { FAIL_WHEN_JIRA_ISSUE_NOT_FOUND } = getInputs();
 
+  console.log(
+    FAIL_WHEN_JIRA_ISSUE_NOT_FOUND,
+    typeof FAIL_WHEN_JIRA_ISSUE_NOT_FOUND
+  );
+
   try {
     const githubConnector = new GithubConnector();
     const jiraConnector = new JiraConnector();
@@ -37,6 +42,7 @@ async function run() {
     await githubConnector.updatePrDetails(issue);
 
     setOutputs(jiraIssueKey);
+    throw new Error('test error');
   } catch (error) {
     console.log('Failed to add Jira description to pull request.');
     core.error(error.message);
