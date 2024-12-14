@@ -1,4 +1,4 @@
-name: Jira Enrich PR Action
+name: The Lazy Linker
 description: Enriches a Pull Request with Jira information based on branch name
 author: Trevor Pierce
 
@@ -28,11 +28,6 @@ inputs:
   description-character-limit:
     description: Limit the description from Jira to a specific character count
     required: false
-
-# Define your outputs here.
-# outputs:
-#   time:
-#     description: The time we greeted you
 
 runs:
   using: node20

@@ -1,4 +1,4 @@
-# Jira Enrich PR Action
+# The Lazy Linker
 
 [![GitHub Super-Linter](https://github.com/actions/hello-world-javascript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/hello-world-javascript-action/actions/workflows/ci.yml/badge.svg)
@@ -34,14 +34,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  enrich-pr-with-jira:
-    name: Enrich PR with Jira
+  jira-lazy-link:
+    name: Jira Lazy Linker
     runs-on: ubuntu-latest
 
     steps:
       - name: Print to Log
         id: print-to-log
-        uses: reachtrevor/actions-enrich-pr-with-jira@v1.2.0
+        uses: reachtrevor/actions-the-lazy-linker@v1.2.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           jira-base-url: ${{ secrets.JIRA_BASE_URL }}

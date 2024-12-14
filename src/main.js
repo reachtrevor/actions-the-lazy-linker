@@ -10,7 +10,7 @@ const { JiraConnector } = require('./jira-connector');
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
-  const { FAIL_WHEN_JIRA_ISSUE_NOT_FOUND } = getInputs();
+  const { FAIL_WHEN_JIRA_ISSUE_NOT_FOUND } = getInputs(1);
 
   try {
     const githubConnector = new GithubConnector();
