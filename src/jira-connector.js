@@ -4,7 +4,7 @@ const { getInputs } = require('./action-inputs');
 
 export class JiraConnector {
   constructor() {
-    const { JIRA_TOKEN, JIRA_BASE_URL, JIRA_USER_EMAIL } = getInputs();
+    const { JIRA_TOKEN, JIRA_BASE_URL, JIRA_USER_EMAIL } = getInputs(1);
 
     this.JIRA_BASE_URL = JIRA_BASE_URL;
     this.JIRA_TOKEN = JIRA_TOKEN;
@@ -21,7 +21,7 @@ export class JiraConnector {
   }
 
   async getIssue(issueKey) {
-    const { DESCRIPTION_CHARACTER_LIMIT } = getInputs();
+    const { DESCRIPTION_CHARACTER_LIMIT } = getInputs(1);
     const fields = 'summary,description,issuetype';
 
     try {

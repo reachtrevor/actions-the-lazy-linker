@@ -33207,13 +33207,15 @@ function wrappy (fn, cb) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484);
-const github = __nccwpck_require__(3228);
+const memoize = __nccwpck_require__(2331);
 
-module.exports.getInputs = function () {
+function getInputs() {
   const GITHUB_TOKEN = core.getInput('github-token', { required: true });
   const JIRA_TOKEN = core.getInput('jira-api-key', { required: true });
   const JIRA_BASE_URL = core.getInput('jira-base-url', { required: true });
   const JIRA_USER_EMAIL = core.getInput('jira-user-email', { required: true });
+
+  // optional inputs
   const FAIL_WHEN_JIRA_ISSUE_NOT_FOUND =
     core.getInput('fail-when-jira-issue-not-found') === 'true' || false;
 
@@ -33235,7 +33237,9 @@ module.exports.getInputs = function () {
     FAIL_WHEN_JIRA_ISSUE_NOT_FOUND,
     DESCRIPTION_CHARACTER_LIMIT: nextDescriptionLimit
   };
-};
+}
+
+module.exports.getInputs = memoize(getInputs);
 
 
 /***/ }),
@@ -33262,7 +33266,7 @@ const { getInputs } = __nccwpck_require__(8213);
 
 class GithubConnector {
   constructor() {
-    const { GITHUB_TOKEN } = getInputs();
+    const { GITHUB_TOKEN } = getInputs(1);
 
     this.octokit = github.getOctokit(GITHUB_TOKEN);
     this.ghdata = this._getGithubData();
@@ -33386,7 +33390,7 @@ const { getInputs } = __nccwpck_require__(8213);
 
 class JiraConnector {
   constructor() {
-    const { JIRA_TOKEN, JIRA_BASE_URL, JIRA_USER_EMAIL } = getInputs();
+    const { JIRA_TOKEN, JIRA_BASE_URL, JIRA_USER_EMAIL } = getInputs(1);
 
     this.JIRA_BASE_URL = JIRA_BASE_URL;
     this.JIRA_TOKEN = JIRA_TOKEN;
@@ -33403,7 +33407,7 @@ class JiraConnector {
   }
 
   async getIssue(issueKey) {
-    const { DESCRIPTION_CHARACTER_LIMIT } = getInputs();
+    const { DESCRIPTION_CHARACTER_LIMIT } = getInputs(1);
     const fields = 'summary,description,issuetype';
 
     try {
@@ -33545,12 +33549,7 @@ const { JiraConnector } = __nccwpck_require__(5731);
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
-  const { FAIL_WHEN_JIRA_ISSUE_NOT_FOUND } = getInputs();
-
-  console.log(
-    FAIL_WHEN_JIRA_ISSUE_NOT_FOUND,
-    typeof FAIL_WHEN_JIRA_ISSUE_NOT_FOUND
-  );
+  const { FAIL_WHEN_JIRA_ISSUE_NOT_FOUND } = getInputs(1);
 
   try {
     const githubConnector = new GithubConnector();
@@ -33577,7 +33576,6 @@ async function run() {
     await githubConnector.updatePrDetails(issue);
 
     setOutputs(jiraIssueKey);
-    throw new Error('test error');
   } catch (error) {
     console.log('Failed to add Jira description to pull request.');
     core.error(error.message);
@@ -33600,6 +33598,28 @@ function setOutputs(key) {
 module.exports = {
   run
 };
+
+
+/***/ }),
+
+/***/ 2331:
+/***/ (() => {
+
+function memoize(func) {
+  const cache = {};
+
+  return function (...args) {
+    const key = JSON.stringify(args);
+
+    if (cache[key]) {
+      return cache[key];
+    } else {
+      const result = func(...args);
+      cache[key] = result;
+      return result;
+    }
+  };
+}
 
 
 /***/ }),

@@ -5,7 +5,7 @@ const { getInputs } = require('./action-inputs');
 
 class GithubConnector {
   constructor() {
-    const { GITHUB_TOKEN } = getInputs();
+    const { GITHUB_TOKEN } = getInputs(1);
 
     this.octokit = github.getOctokit(GITHUB_TOKEN);
     this.ghdata = this._getGithubData();
