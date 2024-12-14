@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Print to Log
         id: print-to-log
-        uses: reachtrevor/actions-the-lazy-linker@v1.2.1
+        uses: reachtrevor/actions-the-lazy-linker@v1.3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           jira-base-url: ${{ secrets.JIRA_BASE_URL }}
