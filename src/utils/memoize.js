@@ -1,4 +1,4 @@
-function memoize(func) {
+module.exports = function memoize(func) {
   const cache = {};
 
   return function (...args) {
@@ -12,4 +12,4 @@ function memoize(func) {
       return result;
     }
   };
-}
+};
