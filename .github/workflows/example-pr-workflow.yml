@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   enrich-pr-with-jira:
-    name: Enrich PR with Jira
+    name: Jira Lazy Linker
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,7 @@ jobs:
       # actions/hello-world-javascript-action@v1.2.3
       - name: Print to Log
         id: print-to-log
-        uses: reachtrevor/jira-enrich-pr-action@v1.3.0
+        uses: reachtrevor/actions-the-lazy-linker@fix/GN-41
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           jira-base-url: ${{ secrets.JIRA_BASE_URL }}
