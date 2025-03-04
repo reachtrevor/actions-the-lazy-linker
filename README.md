@@ -44,7 +44,7 @@ jobs:
         uses: reachtrevor/actions-the-lazy-linker@v1.3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          atlassian-org-name: ${{ secrets.ATLASSIAN_ORG_NAME }}
           jira-api-key: ${{ secrets.JIRA_API_KEY }}
           jira-user-email: ${{ secrets.JIRA_USER_EMAIL }}
 ```
@@ -55,7 +55,7 @@ jobs:
 | -------------------------------- | ------- | ------------------------------------------------------------- |
 | `github-token`                   | -       | Github token provided by Github Actions                       |
 | `jira-api-key`                   | -       | User API key from Jira Cloud                                  |
-| `jira-base-url`                  | -       | Organization base url for Jira Cloud                          |
+| `atlassian-org-name`             | -       | Organization name url for Atlassian (Jira) Cloud              |
 | `jira-user-email`                | -       | User email tied to API key from Jira Cloud                    |
 | `fail-when-jira-issue-not-found` | false   | Enabled to enforce a Jira key in the branch name              |
 | `description-character-limit`    | -       | Limit the description from Jira to a specific character count |

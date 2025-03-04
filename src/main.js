@@ -33,13 +33,21 @@ async function run() {
 
     const jiraIssueKey = jiraKeyMatch[0].toUpperCase();
 
+    const jiraConnected = await jiraConnector.ping();
+
+    if (!jiraConnected) {
+      console.log('Failed to connect to Jira.');
+      setOutputs(null, null);
+      process.exit(0);
+    }
+
     const issue = await jiraConnector.getIssue(jiraIssueKey);
     await githubConnector.updatePrDetails(issue);
 
     setOutputs(jiraIssueKey);
   } catch (error) {
     console.log('Failed to add Jira description to pull request.');
-    core.error(error.message);
+    core.error(error.message, error);
 
     setOutputs(null, null);
 

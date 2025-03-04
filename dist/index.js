@@ -33212,8 +33212,10 @@ const memoize = __nccwpck_require__(2331);
 function getInputs() {
   const GITHUB_TOKEN = core.getInput('github-token', { required: true });
   const JIRA_TOKEN = core.getInput('jira-api-key', { required: true });
-  const JIRA_BASE_URL = core.getInput('jira-base-url', { required: true });
   const JIRA_USER_EMAIL = core.getInput('jira-user-email', { required: true });
+  const ATLASSIAN_ORG_NAME = core.getInput('atlassian-org-name', {
+    required: true
+  });
 
   // optional inputs
   const FAIL_WHEN_JIRA_ISSUE_NOT_FOUND =
@@ -33231,7 +33233,7 @@ function getInputs() {
 
   return {
     JIRA_TOKEN,
-    JIRA_BASE_URL,
+    ATLASSIAN_ORG_NAME,
     JIRA_USER_EMAIL,
     GITHUB_TOKEN,
     FAIL_WHEN_JIRA_ISSUE_NOT_FOUND,
@@ -33390,9 +33392,9 @@ const { getInputs } = __nccwpck_require__(8213);
 
 class JiraConnector {
   constructor() {
-    const { JIRA_TOKEN, JIRA_BASE_URL, JIRA_USER_EMAIL } = getInputs(1);
+    const { JIRA_TOKEN, ATLASSIAN_ORG_NAME, JIRA_USER_EMAIL } = getInputs(1);
 
-    this.JIRA_BASE_URL = JIRA_BASE_URL;
+    this.ATLASSIAN_ORG_NAME = ATLASSIAN_ORG_NAME;
     this.JIRA_TOKEN = JIRA_TOKEN;
 
     const credentials = Buffer.from(
@@ -33400,10 +33402,30 @@ class JiraConnector {
     ).toString('base64');
 
     this.client = axios.create({
-      baseURL: `${JIRA_BASE_URL}/rest/api/2`,
+      baseURL: `https://${this.ATLASSIAN_ORG_NAME}.atlassian.net/rest/api/2`,
       timeout: 2000,
       headers: { Authorization: `Basic ${credentials}` }
     });
+  }
+
+  async ping() {
+    try {
+      const response = await this.client.get('/myself');
+
+      if (!response?.data) {
+        console.log(response);
+        throw new Error('"response" is not defined.');
+      }
+
+      console.log('Jira user:', response.data.displayName);
+      return Boolean(response.data.displayName);
+    } catch (error) {
+      if (error.response) {
+        throw new Error(JSON.stringify(error.response.data, null, 4));
+      }
+
+      throw new Error(error.message);
+    }
   }
 
   async getIssue(issueKey) {
@@ -33415,7 +33437,10 @@ class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
-      console.log('response exists: ', !!response);
+      if (!response?.data) {
+        console.log(response);
+        throw new Error('Jira issue "response" is not defined');
+      }
 
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
@@ -33434,14 +33459,22 @@ class JiraConnector {
         description,
         issuetype: response.data.fields.issuetype?.name,
         issuetypeicon: response.data.fields.issuetype?.iconUrl,
-        url: `${this.JIRA_BASE_URL}/browse/${response.data.key}`
+        url: `https://${this.ATLASSIAN_ORG_NAME}.atlassian.net/browse/${response.data.key}`
       };
     } catch (error) {
-      throw new Error(JSON.stringify(error.response.data, null, 4));
+      if (error.response) {
+        throw new Error(JSON.stringify(error.response.data, null, 4));
+      }
+
+      throw new Error(error.message);
     }
   }
 
   async descriptionToMarkdown(description) {
+    if (!description) {
+      return 'null';
+    }
+
     let next = description;
 
     next = this.mdStatus(next);
@@ -33572,13 +33605,21 @@ async function run() {
 
     const jiraIssueKey = jiraKeyMatch[0].toUpperCase();
 
+    const jiraConnected = await jiraConnector.ping();
+
+    if (!jiraConnected) {
+      console.log('Failed to connect to Jira.');
+      setOutputs(null, null);
+      process.exit(0);
+    }
+
     const issue = await jiraConnector.getIssue(jiraIssueKey);
     await githubConnector.updatePrDetails(issue);
 
     setOutputs(jiraIssueKey);
   } catch (error) {
     console.log('Failed to add Jira description to pull request.');
-    core.error(error.message);
+    core.error(error.message, error);
 
     setOutputs(null, null);
 

@@ -22,10 +22,10 @@ jobs:
       # actions/hello-world-javascript-action@v1.2.3
       - name: Print to Log
         id: print-to-log
-        uses: reachtrevor/actions-the-lazy-linker@v1.3.1
+        uses: reachtrevor/actions-the-lazy-linker@v2.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          atlassian-org-name: ${{ secrets.ATLASSIAN_ORG_NAME }}
           jira-api-key: ${{ secrets.JIRA_API_KEY }}
           jira-user-email: ${{ secrets.JIRA_USER_EMAIL }}
           # description-character-limit: 50
