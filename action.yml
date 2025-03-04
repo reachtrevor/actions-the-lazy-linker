@@ -12,7 +12,7 @@ inputs:
     description: User API key from Jira
     required: true
 
-  jira-base-url:
+  atlassian-org-name:
     description: Organization base url for Jira
     required: true
 

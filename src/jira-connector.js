@@ -4,9 +4,9 @@ const { getInputs } = require('./action-inputs');
 
 export class JiraConnector {
   constructor() {
-    const { JIRA_TOKEN, JIRA_BASE_URL, JIRA_USER_EMAIL } = getInputs(1);
+    const { JIRA_TOKEN, ATLASSIAN_ORG_NAME, JIRA_USER_EMAIL } = getInputs(1);
 
-    this.JIRA_BASE_URL = JIRA_BASE_URL;
+    this.ATLASSIAN_ORG_NAME = ATLASSIAN_ORG_NAME;
     this.JIRA_TOKEN = JIRA_TOKEN;
 
     const credentials = Buffer.from(
@@ -14,10 +14,30 @@ export class JiraConnector {
     ).toString('base64');
 
     this.client = axios.create({
-      baseURL: `${JIRA_BASE_URL}/rest/api/2`,
+      baseURL: `https://${this.ATLASSIAN_ORG_NAME}.atlassian.net/rest/api/2`,
       timeout: 2000,
       headers: { Authorization: `Basic ${credentials}` }
     });
+  }
+
+  async ping() {
+    try {
+      const response = await this.client.get('/myself');
+
+      if (!response?.data) {
+        console.log(response);
+        throw new Error('No key "data" response.');
+      }
+
+      console.log('Jira user:', response.data.displayName);
+      return Boolean(response.data.displayName);
+    } catch (error) {
+      if (error.response) {
+        throw new Error(JSON.stringify(error.response.data, null, 4));
+      }
+
+      throw new Error(error.message);
+    }
   }
 
   async getIssue(issueKey) {
@@ -29,7 +49,7 @@ export class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
-      console.log('response exists: ', !!response);
+      console.log(response);
 
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
@@ -48,10 +68,14 @@ export class JiraConnector {
         description,
         issuetype: response.data.fields.issuetype?.name,
         issuetypeicon: response.data.fields.issuetype?.iconUrl,
-        url: `${this.JIRA_BASE_URL}/browse/${response.data.key}`
+        url: `https://${this.ATLASSIAN_ORG_NAME}.atlassian.net/browse/${response.data.key}`
       };
     } catch (error) {
-      throw new Error(JSON.stringify(error.response.data, null, 4));
+      if (error.response) {
+        throw new Error(JSON.stringify(error.response.data, null, 4));
+      }
+
+      throw new Error(error.message);
     }
   }
 

@@ -33,6 +33,14 @@ async function run() {
 
     const jiraIssueKey = jiraKeyMatch[0].toUpperCase();
 
+    const jiraConnected = await jiraConnector.ping();
+
+    if (!jiraConnected) {
+      console.log('Failed to connect to Jira.');
+      setOutputs(null, null);
+      process.exit(0);
+    }
+
     const issue = await jiraConnector.getIssue(jiraIssueKey);
     await githubConnector.updatePrDetails(issue);
 

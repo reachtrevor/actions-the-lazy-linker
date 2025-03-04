@@ -4,8 +4,10 @@ const memoize = require('./utils/memoize');
 function getInputs() {
   const GITHUB_TOKEN = core.getInput('github-token', { required: true });
   const JIRA_TOKEN = core.getInput('jira-api-key', { required: true });
-  const JIRA_BASE_URL = core.getInput('jira-base-url', { required: true });
   const JIRA_USER_EMAIL = core.getInput('jira-user-email', { required: true });
+  const ATLASSIAN_ORG_NAME = core.getInput('atlassian-org-name', {
+    required: true
+  });
 
   // optional inputs
   const FAIL_WHEN_JIRA_ISSUE_NOT_FOUND =
@@ -23,7 +25,7 @@ function getInputs() {
 
   return {
     JIRA_TOKEN,
-    JIRA_BASE_URL,
+    ATLASSIAN_ORG_NAME,
     JIRA_USER_EMAIL,
     GITHUB_TOKEN,
     FAIL_WHEN_JIRA_ISSUE_NOT_FOUND,
