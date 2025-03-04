@@ -26,7 +26,7 @@ export class JiraConnector {
 
       if (!response?.data) {
         console.log(response);
-        throw new Error('No key "data" response.');
+        throw new Error('"response" is not defined.');
       }
 
       console.log('Jira user:', response.data.displayName);
@@ -48,8 +48,6 @@ export class JiraConnector {
       const response = await this.client.get(
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
-
-      console.log(response);
 
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
@@ -80,6 +78,10 @@ export class JiraConnector {
   }
 
   async descriptionToMarkdown(description) {
+    if (!description) {
+      return '';
+    }
+
     let next = description;
 
     next = this.mdStatus(next);

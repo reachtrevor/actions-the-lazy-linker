@@ -33414,7 +33414,7 @@ class JiraConnector {
 
       if (!response?.data) {
         console.log(response);
-        throw new Error('No key "data" response.');
+        throw new Error('"response" is not defined.');
       }
 
       console.log('Jira user:', response.data.displayName);
@@ -33436,8 +33436,6 @@ class JiraConnector {
       const response = await this.client.get(
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
-
-      console.log(response);
 
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
@@ -33468,6 +33466,10 @@ class JiraConnector {
   }
 
   async descriptionToMarkdown(description) {
+    if (!description) {
+      return '';
+    }
+
     let next = description;
 
     next = this.mdStatus(next);
@@ -33612,7 +33614,7 @@ async function run() {
     setOutputs(jiraIssueKey);
   } catch (error) {
     console.log('Failed to add Jira description to pull request.');
-    core.error(error.message);
+    core.error(error.message, error);
 
     setOutputs(null, null);
 

@@ -47,7 +47,7 @@ async function run() {
     setOutputs(jiraIssueKey);
   } catch (error) {
     console.log('Failed to add Jira description to pull request.');
-    core.error(error.message);
+    core.error(error.message, error);
 
     setOutputs(null, null);
 
