@@ -49,6 +49,11 @@ export class JiraConnector {
         `/issue/${issueKey}?fields=${fields},expand=renderedFields`
       );
 
+      if (!response?.data) {
+        console.log(response);
+        throw new Error('Jira issue "response" is not defined');
+      }
+
       let description = await this.descriptionToMarkdown(
         response.data.fields.description
       );
@@ -79,7 +84,7 @@ export class JiraConnector {
 
   async descriptionToMarkdown(description) {
     if (!description) {
-      return '';
+      return 'null';
     }
 
     let next = description;
